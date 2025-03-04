@@ -17,6 +17,8 @@ struct ContentView: View {
     
     @State private var showingAddScreen = false
     
+    let minimumRating = 1
+    
     var body: some View {
         NavigationStack {
             List {
@@ -29,6 +31,7 @@ struct ContentView: View {
                             VStack(alignment: .leading) {
                                 Text(book.title)
                                     .font(.headline)
+                                    .foregroundStyle(book.rating == minimumRating ? .red : .primary)
                                 
                                 Text(book.author)
                                     .foregroundStyle(.secondary)
@@ -68,5 +71,12 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: Book.self, configurations: config)
+    let example = Book(title: "Test Book", author: "Test Author", genre: "Fantasy", review: "This was a great book; I really enjoyed it.", rating: 4, date: Date.now)
+    
+    container.mainContext.insert(example)
+
+    return ContentView()
+        .modelContainer(container)
 }
